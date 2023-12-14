@@ -5,14 +5,23 @@ var score
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	new_game()
+	get_tree().call_group("mobs", "queue_free")
 
 func game_over():
+	$MusicBackground.stop()
+	$DeathSound.play()
+
 	$ScoreTimer.stop()
 	$MobTimer.stop()
+	$HUD.show_game_over()
 
 func new_game():
+	print ("new game")
 	score = 0
+	$HUD.update_score(score)
+	$HUD.show_message("Get Ready")
+	$MusicBackground.play()
+
 	$Player.start($StartPosition.position)
 	$StartTimer.start()
 	
@@ -27,7 +36,6 @@ func _on_mob_timer_timeout():
 
 	# Set the mob's direction perpendicular to the path direction.
 	var direction = mob_spawn_location.rotation + PI / 2
-
 	# Set the mob's position to a random location.
 	mob.position = mob_spawn_location.position
 
@@ -44,6 +52,7 @@ func _on_mob_timer_timeout():
 
 func _on_score_timer_timeout():
 	score += 1
+	$HUD.update_score(score)
 
 func _on_start_timer_timeout():
 	$MobTimer.start()
